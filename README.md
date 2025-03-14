@@ -45,9 +45,10 @@ COMPLIANCE_EMAIL_ALERT_METHOD_ID=55
 COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID=66
 ```
 2. **Obtain Credentials**
-Thieves API Token
-Asana API Key
-Google Service Account
+[Thieves API](https://negativestarinnovators.com/documentation/rest_api.html)
+[Asana API Key](https://developers.asana.com/docs)
+[Google Service Account](https://cloud.google.com/iam/docs/service-accounts)
+
 
 ## Usage
 ```bash
