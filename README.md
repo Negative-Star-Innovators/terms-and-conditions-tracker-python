@@ -64,7 +64,7 @@ The webhook server will start at http://localhost:5000
 1. Tracker created for target URL
 2. System checks page every 24 hours
 3. On detected change:
-Updates tracking condition
+*   Updates tracking condition
 *   Creates Asana task with due date
 *   Saves PDF snapshot to Drive
 *   Sends email alert
