@@ -1,2 +1,8 @@
 # Ignore config.txt
 config.txt
+
+# Ignore generated PDF files
+*.pdf
+
+# Ignore python virtual enviroment
+.venv/

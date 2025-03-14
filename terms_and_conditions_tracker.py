@@ -1,5 +1,4 @@
 import requests
-import json
 from datetime import datetime, timedelta
 import os
 from flask import Flask, request, jsonify  # For webhook server
@@ -122,62 +121,6 @@ def download_and_upload_to_drive(url, filename):
         print(f"Error downloading or uploading to Drive: {e}")
         return None
 
-
-def create_alert_methods():
-    """Create email and webhook alert methods"""
-    headers = {"Authorization": f"Bearer {API_TOKEN}"}
-    
-    # Create email alert
-    email_alert = requests.post(
-        f"{BASE_URL}/create_alert_method",
-        json={
-            "name": "Compliance Email",
-            "type": "Email",
-            "contact_details": COMPLIANCE_EMAIL
-        },
-        headers=headers
-    ).json()
-    
-    # Create webhook alert
-    webhook_alert = requests.post(
-        f"{BASE_URL}/create_alert_method",
-        json={
-            "name": "Compliance Webhook",
-            "type": "Webhook",
-            "contact_details": WEBHOOK_URL
-        },
-        headers=headers
-    ).json()
-    
-    return [
-        email_alert.get('new_user_alert_method_id'),
-        webhook_alert.get('new_user_alert_method_id')
-    ]
-
-def get_alert_methods_url():
-    """Create email and webhook alert methods"""
-    headers = {"Authorization": f"Bearer {API_TOKEN}"}
-    
-    # Create email alert
-    alert_methods_respose = requests.post(
-        f"{BASE_URL}/get_alert_methods",
-        json={
-            
-        },
-        headers=headers
-    ).json()
-
-    print(f"alert_methods_respose: {alert_methods_respose}")
-
-    alert_methods = alert_methods_respose['alert_methods']
-
-    ids = []
-
-    for alert_method in alert_methods:
-        ids.append(alert_method['id'])
-
-    return ids
-
     
 
 def create_tracker(url, alert_method_ids, date, tracker_name):
@@ -241,13 +184,6 @@ def handle_webhook():
 
 
 if __name__ == "__main__":
-    # Used to automate creating alert methods, can use webform if want to as well.
-    # alert_method_ids = create_alert_methods()
-
-    # Use this to get the alert method IDs
-    # alert_method_ids = get_alert_methods_url()
-    # print(f"alert_method_ids:{alert_method_ids}")
-
     # Create trackers
     trackers = [
         {"url": "https://cdn.deepseek.com/policies/en-US/deepseek-terms-of-use.html", "date": "10 Jan 2025", "tracker_name": "Deepseek Terms of Use"},
