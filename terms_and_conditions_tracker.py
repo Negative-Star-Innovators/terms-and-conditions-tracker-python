@@ -5,8 +5,7 @@ from flask import Flask, request, jsonify  # For webhook server
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
-import pdfkit
-
+from weasyprint import HTML
 
 def readConfig(file_path):
     config = {}
@@ -94,17 +93,20 @@ def create_asana_task(taskContent, taskName):
         print(f"Asana API Error: {response.text}")
     
     return response.json()
+    
 
 def download_and_upload_to_drive(url, filename):
     try:
         output_pdf = f"{filename}.pdf"
-        pdfkit.from_url(url, output_pdf)
 
-        # Authenticate and build the Drive service
+        # --- WeasyPrint PDF Generation ---
+        HTML(url).write_pdf(output_pdf)
+        # --- End WeasyPrint ---
+
+        # Authenticate and build the Drive service (same as before)
         creds = service_account.Credentials.from_service_account_file(GOOGLE_DRIVE_CREDENTIALS_FILE, scopes=['https://www.googleapis.com/auth/drive.file'])
         service = build('drive', 'v3', credentials=creds)
-
-
+		
         # Upload the PDF (or original HTML if conversion failed) to Google Drive
         file_metadata = {
             'name': os.path.basename(output_pdf), # Use the actual filename
@@ -115,7 +117,6 @@ def download_and_upload_to_drive(url, filename):
 
         print(f"File uploaded to Google Drive: {file.get('id')}")
         return file.get('id')
-
 
     except Exception as e:
         print(f"Error downloading or uploading to Drive: {e}")

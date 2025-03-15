@@ -23,12 +23,6 @@ Monitor changes to Terms & Conditions across multiple websites. Get alerts via e
     pip install -r requirements.txt
     ```
 
-3.  **System Dependencies (for PDF generation on Linux):**
-    ```bash
-    sudo apt-get update  # Important: Update package lists first
-    sudo apt-get install -y wkhtmltopdf  # The -y flag automatically answers yes to prompts
-    ```
-
 ## Configuration
 
 1.  **Modify `config.txt`:**
