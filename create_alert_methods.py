@@ -95,6 +95,8 @@ def get_alert_methods_url():
         headers=headers
     ).json()
 
+    print(f"alert_methods_respose:{alert_methods_respose}")
+
     alertMethodsResult = {}
 
     if alert_methods_respose.get('success'):
@@ -110,7 +112,7 @@ def get_alert_methods_url():
 if __name__ == "__main__":
     # Check if these values are already entered in config.txt. If want to replace these values then delete the value in config.txt but keep the key=
     if COMPLIANCE_EMAIL_ALERT_METHOD_ID != "" and COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID != "":
-        print("Alert methods already exist. Skipping retrieval and creation. You can run terms_and_conditions_tracker.py")
+        print("Alert methods already exist. Skipping retrieval and creation. You can run terms_and_conditions_tracker.py. If want to replace these values then delete the value in config.txt but keep the key=")
         exit(0)
 
     # First check that there are alert methods existing. 
