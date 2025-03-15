@@ -31,7 +31,7 @@ Monitor changes to Terms & Conditions across multiple websites. Get alerts via e
 
 ## Configuration
 
-1.  **Create `config.txt`:**
+1.  **Modify `config.txt`:**
 
     Enter the requried values in the file named `config.txt` which is located at the root directory of the project.  This file will store your sensitive configuration values. It will look like this
 
@@ -52,7 +52,7 @@ Monitor changes to Terms & Conditions across multiple websites. Get alerts via e
 
 2.  **Obtain Credentials:**
 
-    *   **Thieves API Token:** Obtain your API token from the [Thieves API documentation](https://negativestarinnovators.com/documentation/rest_api.html).
+    *   **Thieves API Token:** You wll need to register [here](https://negativestarinnovators.com/pricing/pricing.html) (free plans available). Once logged in click on 'Account Settings', then click the create API Token button and then copy the API token.
     *   **Asana API Key:** Generate an Asana Personal Access Token (PAT) from the [Asana Developer Console](https://developers.asana.com/docs).
     *   **Google Service Account:** Create a Google Cloud service account and download its credentials file (`service-account.json`).  Follow the instructions in the [Google Cloud documentation](https://cloud.google.com/iam/docs/service-accounts).  You'll need to enable the Google Drive API for this service account.
     *   **Webhook URL:**  This is the URL where the system will send POST requests when changes are detected.
