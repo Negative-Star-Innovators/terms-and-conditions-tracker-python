@@ -17,7 +17,7 @@ def readConfig(file_path):
     return config
 
 
-config = readConfig("/home/bear/Documents/Projects/AI/TrackerAITesting/Terms and Conditions Demo/config.txt")
+config = readConfig("config.txt")
 
 # Thieves Configuration
 API_TOKEN = config['API_TOKEN']
@@ -195,6 +195,7 @@ if __name__ == "__main__":
         {"url": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement", "date": "10 Jan 2025", "tracker_name": "GitHub General Privacy Statement"},
         {"url": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service", "date": "10 Jan 2025", "tracker_name": "GitHub Terms of Service"},
     ]
+
     
     for tracker in trackers:
         response = create_tracker(tracker["url"], [COMPLIANCE_EMAIL_ALERT_METHOD_ID, COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID], tracker["date"], tracker["tracker_name"])

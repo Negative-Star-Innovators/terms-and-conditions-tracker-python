@@ -27,42 +27,31 @@ COMPLIANCE_EMAIL_ALERT_METHOD_ID=config['COMPLIANCE_EMAIL_ALERT_METHOD_ID']
 COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID=config['COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID']
 
 
-def update_config_file(config_file, alert_methods):
+def update_config_file(config_file, updates):
+    """Update config file with new values while preserving structure"""
+    # Read original file
+    with open(config_file, 'r') as f:
+        original_lines = f.readlines()
 
-    # 1. Read existing config file
-    existing_config = {}
-    try:
-        with open(config_file, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if line and '=' in line:
-                    key, value = line.split('=', 1)
-                    existing_config[key.strip()] = value.strip()
-    except FileNotFoundError:
-        # If file doesn't exist, that is an issue that should be known.
-        raise FileNotFoundError(f"Configuration file not found: {config_file}")
+    # Apply updates
+    updated_lines = []
+    for line in original_lines:
+        stripped_line = line.strip()
+        if stripped_line and '=' in stripped_line:
+            key, value = stripped_line.split('=', 1)
+            key = key.strip()
+            if key in updates:
+                new_value = updates[key]
+                updated_lines.append(f"{key}={new_value}\n")
+                del updates[key]  # Remove handled key
+            else:
+                updated_lines.append(line)
+        else:
+            updated_lines.append(line)
 
-
-    # 2. Update with alert methods (with suffix)
-    for key, value in alert_methods.items():
-        full_key = key + "_ALERT_METHOD_ID"
-        if full_key in existing_config:  # Only update if the key exists in the config
-            existing_config[full_key] = value
-        # else:  # Optional:  Log a warning if the key isn't found?
-        #     print(f"Warning:  Key '{full_key}' not found in config file.")
-
-    # 3. Write the updated configuration back to the file.
-    #    Important: We need to preserve the *original order* of the file.
+    # Write back to file
     with open(config_file, 'w') as f:
-        with open(config_file, 'r') as original_file:
-             for original_line in original_file:
-                original_line = original_line.strip()
-                if original_line and "=" in original_line:
-                  original_key = original_line.split("=",1)[0].strip()
-                  updated_value = existing_config.get(original_key,"")
-                  f.write(f"{original_key}={updated_value}\n")
-                else: #handles blank lines and comments from the original config file.
-                   f.write(original_line + "\n")
+        f.writelines(updated_lines)
 
 
 def create_alert_methods(name, type, contact_details):
@@ -74,13 +63,13 @@ def create_alert_methods(name, type, contact_details):
         f"{BASE_URL}/create_alert_method",
         json={
             "name": name,
-            "type": type,
-            "contact_details": contact_details
+            "method": type,
+            "contact_info": contact_details
         },
         headers=headers
     ).json()
     
-    return alert_method.get('new_alert_method_id'),
+    return alert_method.get('new_alert_method_id')
 
 def get_alert_methods_url():
     """Create email and webhook alert methods"""
@@ -101,9 +90,9 @@ def get_alert_methods_url():
 
     if alert_methods_respose.get('success'):
         for alertMethod in alert_methods_respose['alert_methods']:
-            if alertMethod['type'] == 'Email' and alertMethod['name'] == "Compliance Email":
+            if alertMethod['method'] == 'Email' and alertMethod['name'] == "Compliance Email":
                 alertMethodsResult['COMPLIANCE_EMAIL_ALERT_METHOD_ID'] = alertMethod['id']
-            elif alertMethod['type'] == 'Webhook' and alertMethod['name'] == "Compliance Webhook":
+            elif alertMethod['method'] == 'Webhook' and alertMethod['name'] == "Compliance Webhook":
                 alertMethodsResult['COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID'] = alertMethod['id']
 
     return alertMethodsResult
@@ -120,19 +109,23 @@ if __name__ == "__main__":
 
     # If there are no alert methods, create them. Ensure that your webhook (WEBHOOK_URL) and email address (COMPLIANCE_EMAIL) are set in the config.txt
     # If Compliance Email was created you must verify the email address before you are allowed to use it
-    if not alert_methods[COMPLIANCE_EMAIL_ALERT_METHOD_ID]:
-        complianceAlertMethodId = create_alert_methods("Compliance Email", "Email", COMPLIANCE_EMAIL_ALERT_METHOD_ID)
+    if not alert_methods.get('COMPLIANCE_EMAIL_ALERT_METHOD_ID'):
+        complianceAlertMethodId = create_alert_methods("Compliance Email", "Email", COMPLIANCE_EMAIL)
         alert_methods['COMPLIANCE_EMAIL_ALERT_METHOD_ID'] = complianceAlertMethodId
-    if not alert_methods[COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID]:
+    if not alert_methods.get('COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID'):
         complianceWebhookAlertMethodId = create_alert_methods("Compliance Webhook", "Webhook", WEBHOOK_URL)
         alert_methods['COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID'] = complianceWebhookAlertMethodId
+
+    # Print the alert method IDs
+    print("Alert methods created/retrieved with alert method IDs.")
+    print(f"COMPLIANCE_EMAIL_ALERT_METHOD_ID: {alert_methods['COMPLIANCE_EMAIL_ALERT_METHOD_ID']}")
+    print(f"COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID: {alert_methods['COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID']}")
 
     # Update the config.txt with the alert method IDs
     update_config_file(CONFIG_FILE, alert_methods)
 
-    # Print the alert method IDs
-    print("Alert methods created/retrieved and config.txt updated with alert method IDs.")
-    print(f"COMPLIANCE_EMAIL_ALERT_METHOD_ID: {alert_methods['COMPLIANCE_EMAIL_ALERT_METHOD_ID']}")
-    print(f"COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID: {alert_methods['COMPLIANCE_WEBHOOK_URL_ALERT_METHOD_ID']}")
+    print("Updated Config File")
+
+    
 
     
